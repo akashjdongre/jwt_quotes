@@ -76,7 +76,8 @@ class QuoteController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function create()
-    {        abort_if(Gate::forUser(Auth::guard('admin')->user())->denies('quote_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+    {        
+        abort_if(Gate::forUser(Auth::guard('admin')->user())->denies('quote_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $authors = Author::where('status',1)->get();
         $tags = Tag::where('status',1)->get()->pluck('title', 'id');
@@ -93,7 +94,29 @@ class QuoteController extends Controller
     /*------------------------------ Adding Quotes ----------------------------------*/
 
     public function store(StoreQuoteRequest $request)
-    {
+    {   
+        $validator = Validator::make($request->all(), [
+            'author ' => 'required|numeric',
+            'text' => 'required',
+            'url' => 'required|unique:quotes',
+            'meta_title' => 'required',
+            'picture_meta_title' => 'required',
+            'tags' => 'required|array',
+
+        ]);
+
+        if($validator->fails())
+        {
+            return response()->json(
+                [
+                "status" => "failed",
+                "message" => "Validation error: There was an error while processing data.",
+                "errors" => $validator->errors()->toJson(), 
+                ],
+                400
+            );
+        }
+
         $quote = Quote::create($request->all());
         if ($files = $request->file('image')) {
 
@@ -148,7 +171,12 @@ class QuoteController extends Controller
 
         Social::create(['quote_id'=>$quote->id]);
 
-        return redirect()->route('admin.quotes.index');
+        // return redirect()->route('admin.quotes.index');
+        return response()->json([
+            'status' => 'success',
+            'message' => 'create quotes successfully',
+            'q_id' => $quote->id
+        ], 201);
     }
 
     /**
