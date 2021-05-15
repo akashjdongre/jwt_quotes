@@ -44,7 +44,10 @@ Route::group([
 
     Route::get('/quote_details/{quote}', [QuoteController::class, 'getQuote_details'])->middleware('jwt.verify');
 
-    Route::delete('/quote_delete/{quote}', [QuoteController::class, 'destroy'])->middleware('jwt.verify');    
+    Route::delete('/quote_delete/{quote}', [QuoteController::class, 'destroy'])->middleware('jwt.verify'); 
+
+    // Route::post('/add_quotes', [QuoteController::class, 'create_quote'])->middleware('jwt.verify');    
+    Route::post('/add_quotes', [QuoteController::class, 'store'])->middleware('jwt.verify');    
 
 
     /*---------------------------------- Sub Admin ---------------------------------------------*/

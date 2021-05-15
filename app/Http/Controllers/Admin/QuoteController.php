@@ -13,6 +13,7 @@ use App\Quote;
 use App\Social;
 use App\Tag;
 use Gate;
+use Validator;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
@@ -91,19 +92,34 @@ class QuoteController extends Controller
      * @return \Illuminate\Http\Response
      */
 
+
+    public function create_quote(Request $request)
+    {   
+        return response()->json(
+                [
+                "status" => "failed",
+                "message" => "Validation error: There was an error while processing data.",
+                "errors" => "test errors", 
+                ],
+                400
+            );
+            exit();  
+    }
+
     /*------------------------------ Adding Quotes ----------------------------------*/
 
-    public function store(StoreQuoteRequest $request)
-    {   
+    // public function store(StoreQuoteRequest $request)
+    public function store(Request $request)    
+    {  
         $validator = Validator::make($request->all(), [
-            'author ' => 'required|numeric',
+            'author' => 'required|numeric',
             'text' => 'required',
             'url' => 'required|unique:quotes',
             'meta_title' => 'required',
             'picture_meta_title' => 'required',
             'tags' => 'required|array',
 
-        ]);
+       ]);
 
         if($validator->fails())
         {
@@ -155,6 +171,7 @@ class QuoteController extends Controller
             $quote->gif = $fileName;
         }
         $quote->custom_id='QID'.$quote->id;
+
         $tags=$request->tags_hidden;
         if($tags[0]!=null){
             $tags=explode(",",$tags[0]);
