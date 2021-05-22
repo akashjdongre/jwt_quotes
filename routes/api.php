@@ -46,8 +46,8 @@ Route::group([
 
     Route::delete('/quote_delete/{quote}', [QuoteController::class, 'destroy'])->middleware('jwt.verify'); 
 
-    // Route::post('/add_quotes', [QuoteController::class, 'create_quote'])->middleware('jwt.verify');    
     Route::post('/add_quotes', [QuoteController::class, 'store'])->middleware('jwt.verify');    
+    Route::post('/edit_quotes/{quote}', [QuoteController::class, 'update'])->middleware('jwt.verify');    
 
 
     /*---------------------------------- Sub Admin ---------------------------------------------*/

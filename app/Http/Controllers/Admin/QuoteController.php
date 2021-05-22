@@ -93,19 +93,6 @@ class QuoteController extends Controller
      */
 
 
-    public function create_quote(Request $request)
-    {   
-        return response()->json(
-                [
-                "status" => "failed",
-                "message" => "Validation error: There was an error while processing data.",
-                "errors" => "test errors", 
-                ],
-                400
-            );
-            exit();  
-    }
-
     /*------------------------------ Adding Quotes ----------------------------------*/
 
     // public function store(StoreQuoteRequest $request)
@@ -234,7 +221,7 @@ class QuoteController extends Controller
     
     public function edit(Quote $quote)
     {
-        abort_if(Gate::forUser(Auth::guard('admin')->user())->denies('quote_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        //abort_if(Gate::forUser(Auth::guard('admin')->user())->denies('quote_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $authors = Author::where('status',1)->get();
         // tags
@@ -263,8 +250,16 @@ class QuoteController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateQuoteRequest $request, Quote $quote)
+    
+    //public function update(UpdateQuoteRequest $request, Quote $quote)
+    public function update(Request $request, Quote $quote)
     {
+        // echo $quote->id; echo "<br>";
+        // echo $request->updatedBy; echo "<br>";
+        // echo $request->author; echo "<br>";
+        // echo $request->text; echo "<br>";
+        // echo $request->url; echo "<br>";
+        // exit;
 
         $quote->update($request->all());
         if ($files = $request->file('image')) {
