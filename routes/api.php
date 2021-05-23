@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin_AuthController;
 use App\Http\Controllers\Admin\QuoteController;
 use App\Http\Controllers\Admin\SubAdminController;
+use App\Http\Controllers\Admin\AuthorsController;
 
 
 /*
@@ -53,6 +54,13 @@ Route::group([
     /*---------------------------------- Sub Admin ---------------------------------------------*/
 
     Route::get('/get_all_sub_admin', [SubAdminController::class, 'index'])->middleware('jwt.verify');    
-    Route::get('/getSub_admin/{sub_admin}', [SubAdminController::class, 'sub_admin_detail'])->middleware('jwt.verify');    
+    Route::get('/getSub_admin/{sub_admin}', [SubAdminController::class, 'sub_admin_detail'])->middleware('jwt.verify');   
 
+     /*---------------------------------- Author ---------------------------------------------*/ 
+
+    Route::get('/get_all_author', [AuthorsController::class, 'getAuthors'])->middleware('jwt.verify');    
+    Route::get('/get_author/{author}', [AuthorsController::class, 'show'])->middleware('jwt.verify');    
+    Route::post('/create_author', [AuthorsController::class, 'store'])->middleware('jwt.verify');    
+    Route::post('/edit_author/{author}', [AuthorsController::class, 'update'])->middleware('jwt.verify');    
+    Route::delete('/delete_author/{author}', [AuthorsController::class, 'destroy'])->middleware('jwt.verify');    
 });
