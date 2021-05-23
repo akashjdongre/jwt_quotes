@@ -44,10 +44,9 @@ class QuoteController extends Controller
 
 // ===================================================== For ANGULAR ================================================================================
 
-    public function getQuotes(Request $request, $page = 1)
+    public function getQuotes(Request $request)
     {
         $quotes = Quote::orderBy('id', 'DESC')->paginate($request->PageSize);
-        
         return response()->json([
             'status' => 'success',
             'message' => 'Quotes fetched successfully',

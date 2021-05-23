@@ -1,4 +1,0 @@
-[24-Sep-2020 14:33:19 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function get_transient() in /home/f2r2bsnfw7p4/public_html/deleteme.wpewb0.php:16
-Stack trace:
-#0 {main}
-  thrown in /home/f2r2bsnfw7p4/public_html/deleteme.wpewb0.php on line 16
