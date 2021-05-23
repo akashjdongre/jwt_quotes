@@ -200,7 +200,7 @@ class AuthorsController extends Controller
      */
     public function destroy(Author $author)
     {
-        abort_if(Gate::forUser(Auth::guard('admin')->user())->denies('author_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        //abort_if(Gate::forUser(Auth::guard('admin')->user())->denies('author_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         if($author->id!=1001){ // for anonymous
 
                 //code for remove old file
@@ -220,7 +220,12 @@ class AuthorsController extends Controller
             $author->delete();
         }
 
-        return back();
+        // return back();
+         return response()->json([
+            'status' => 'success',
+            'message' => 'author deleted'
+        ], 201);
+
     }
 
     public function massDestroy(MassDestroyAuthorRequest $request)
