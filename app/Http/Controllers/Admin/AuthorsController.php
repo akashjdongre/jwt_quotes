@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Validator;
 
 class AuthorsController extends Controller
 {
@@ -32,6 +33,21 @@ class AuthorsController extends Controller
 
         return view('admin.pages.authors.index', compact('authors'));
     }
+
+
+    public function getAuthors(Request $request, $page = 1)
+    {
+        //$authors = Author::with('quotes')->orderBy('id', 'DESC')->get()->paginate($request->PageSize);
+        $authors = Author::orderBy('id', 'DESC')->paginate($request->PageSize);
+         
+        return response()->json([
+            'status' => 'success',
+            'message' => 'authors fetched successfully',
+            'data' => $authors
+            ], 201);
+    }
+
+ 
 
     /**
      * Show the form for creating a new resource.
@@ -51,8 +67,26 @@ class AuthorsController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreAuthorRequest $request)
-    {
+    // public function store(StoreAuthorRequest $request)
+    public function store(Request $request)
+    {   
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|unique:authors',
+            'url' => 'required|unique:authors',
+        ]);
+         
+        if($validator->fails())
+        {
+            return response()->json(
+                [
+                "status" => "failed",
+                "message" => "Validation error: There was an error while processing data.",
+                "errors" => $validator->errors()->toJson(), 
+                ],
+                400
+            );
+        } 
+
         $author = Author::create($request->all());
         if ($files = $request->file('image')) {
 
@@ -71,7 +105,13 @@ class AuthorsController extends Controller
         $author->custom_id='AUID'.$author->id;
         $author->save();
 
-        return redirect()->route('admin.authors.index');
+         return response()->json([
+            'status' => 'success',
+            'message' => 'author created successfully',
+            'author_id' => $author->id
+        ], 201);
+
+        // return redirect()->route('admin.authors.index');
     }
 
     /**
@@ -81,9 +121,14 @@ class AuthorsController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show(Author $author)
-    {
-        abort_if(Gate::forUser(Auth::guard('admin')->user())->denies('author_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-        return view('admin.pages.authors.show', compact('author'));
+    {   
+        return response()->json([
+            'status' => 'success',
+            'message' => 'quote details',
+            'data' => $author
+        ], 201);
+        //abort_if(Gate::forUser(Auth::guard('admin')->user())->denies('author_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        //return view('admin.pages.authors.show', compact('author'));
     }
 
     /**
@@ -106,8 +151,10 @@ class AuthorsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateAuthorRequest $request,Author $author)
-    {
+    // public function update(UpdateAuthorRequest $request,Author $author)
+    public function update(Request $request,Author $author)
+    {   
+
         $author->update($request->all());
         if ($files = $request->file('image')) {
 
@@ -136,7 +183,13 @@ class AuthorsController extends Controller
         }
         $author->save();
 
-        return redirect()->route('admin.authors.index');
+         return response()->json([
+            'status' => 'success',
+            'message' => 'author updated successfully',
+            'author_id' => $author->id
+        ], 201);
+
+        // return redirect()->route('admin.authors.index');
     }
 
     /**
