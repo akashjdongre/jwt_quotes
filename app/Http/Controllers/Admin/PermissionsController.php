@@ -28,6 +28,16 @@ class PermissionsController extends Controller
         return view('admin.pages.permissions.index', compact('permissions'));
     }
 
+    public function getPermission(Request $request, $page = 1)
+    {
+        $permissions = Permission::orderBy('id', 'DESC')->paginate($request->PageSize);
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Permission fetched successfully',
+            'data' => $permissions
+            ], 201);
+    }
+
     /**
      * Show the form for creating a new resource.
      *
