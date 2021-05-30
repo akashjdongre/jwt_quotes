@@ -7,6 +7,10 @@ use App\Http\Controllers\Admin_AuthController;
 use App\Http\Controllers\Admin\QuoteController;
 use App\Http\Controllers\Admin\SubAdminController;
 use App\Http\Controllers\Admin\AuthorsController;
+use App\Http\Controllers\Admin\PermissionsController;
+use App\Http\Controllers\Admin\TagsController;
+
+
 
 
 /*
@@ -56,11 +60,23 @@ Route::group([
     Route::get('/get_all_sub_admin', [SubAdminController::class, 'index'])->middleware('jwt.verify');    
     Route::get('/getSub_admin/{sub_admin}', [SubAdminController::class, 'sub_admin_detail'])->middleware('jwt.verify');   
 
-     /*---------------------------------- Author ---------------------------------------------*/ 
+    /*---------------------------------- Author ---------------------------------------------*/ 
 
     Route::get('/get_all_author', [AuthorsController::class, 'getAuthors'])->middleware('jwt.verify');    
     Route::get('/get_author/{author}', [AuthorsController::class, 'show'])->middleware('jwt.verify');    
     Route::post('/create_author', [AuthorsController::class, 'store'])->middleware('jwt.verify');    
     Route::post('/edit_author/{author}', [AuthorsController::class, 'update'])->middleware('jwt.verify');    
-    Route::delete('/delete_author/{author}', [AuthorsController::class, 'destroy'])->middleware('jwt.verify');    
+    Route::delete('/delete_author/{author}', [AuthorsController::class, 'destroy'])->middleware('jwt.verify');   
+
+
+    /*------------------------------------- Permissions ---------------------------------------------*/ 
+
+    Route::get('/get_permission', [PermissionsController::class, 'getPermission'])->middleware('jwt.verify'); 
+    
+    /*---------------------------------------- Tags ---------------------------------------------*/ 
+
+    Route::get('/get_tags', [TagsController::class, 'getTags'])->middleware('jwt.verify'); 
+    Route::get('/get_tag_detail/{tag}', [TagsController::class, 'show'])->middleware('jwt.verify');
+
+
 });

@@ -33,6 +33,18 @@ class TagsController extends Controller
         return view('admin.pages.tags.index', compact('tags'));
     }
 
+    
+    public function getTags(Request $request, $page = 1)
+    {
+        $tags = Tag::orderBy('id', 'DESC')->paginate($request->PageSize);
+        return response()->json([
+            'status' => 'success',
+            'message' => 'tags fetched successfully',
+            'data' => $tags
+            ], 201);
+    }
+
+
     /**
      * Show the form for creating a new resource.
      *
@@ -53,6 +65,7 @@ class TagsController extends Controller
      */
     public function store(StoreTagRequest $request)
     {
+        print_r($request->all()); exit;
         $tag = Tag::create($request->all());
         if ($files = $request->file('meta_image')) {
 
@@ -76,9 +89,15 @@ class TagsController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show(Tag $tag)
-    {
-        abort_if(Gate::forUser(Auth::guard('admin')->user())->denies('tag_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-        return view('admin.pages.tags.show', compact('tag'));
+    {   
+         return response()->json([
+            'status' => 'success',
+            'message' => 'tag details',
+            'data' => $tag
+        ], 201);
+
+        //abort_if(Gate::forUser(Auth::guard('admin')->user())->denies('tag_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        //return view('admin.pages.tags.show', compact('tag'));
     }
 
     /**
