@@ -13,6 +13,7 @@ use App\Quote;
 use App\Social;
 use App\Tag;
 use Gate;
+use Validator;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
@@ -75,7 +76,8 @@ class QuoteController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function create()
-    {        abort_if(Gate::forUser(Auth::guard('admin')->user())->denies('quote_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+    {        
+        abort_if(Gate::forUser(Auth::guard('admin')->user())->denies('quote_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $authors = Author::where('status',1)->get();
         $tags = Tag::where('status',1)->get()->pluck('title', 'id');
@@ -89,10 +91,34 @@ class QuoteController extends Controller
      * @return \Illuminate\Http\Response
      */
 
+
     /*------------------------------ Adding Quotes ----------------------------------*/
 
-    public function store(StoreQuoteRequest $request)
-    {
+    // public function store(StoreQuoteRequest $request)
+    public function store(Request $request)    
+    {  
+        $validator = Validator::make($request->all(), [
+            'author' => 'required|numeric',
+            'text' => 'required',
+            'url' => 'required|unique:quotes',
+            'meta_title' => 'required',
+            'picture_meta_title' => 'required',
+            'tags' => 'required|array',
+
+       ]);
+
+        if($validator->fails())
+        {
+            return response()->json(
+                [
+                "status" => "failed",
+                "message" => "Validation error: There was an error while processing data.",
+                "errors" => $validator->errors()->toJson(), 
+                ],
+                400
+            );
+        }
+
         $quote = Quote::create($request->all());
         if ($files = $request->file('image')) {
 
@@ -131,6 +157,7 @@ class QuoteController extends Controller
             $quote->gif = $fileName;
         }
         $quote->custom_id='QID'.$quote->id;
+
         $tags=$request->tags_hidden;
         if($tags[0]!=null){
             $tags=explode(",",$tags[0]);
@@ -147,7 +174,12 @@ class QuoteController extends Controller
 
         Social::create(['quote_id'=>$quote->id]);
 
-        return redirect()->route('admin.quotes.index');
+        // return redirect()->route('admin.quotes.index');
+        return response()->json([
+            'status' => 'success',
+            'message' => 'create quotes successfully',
+            'q_id' => $quote->id
+        ], 201);
     }
 
     /**
@@ -188,7 +220,7 @@ class QuoteController extends Controller
     
     public function edit(Quote $quote)
     {
-        abort_if(Gate::forUser(Auth::guard('admin')->user())->denies('quote_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        //abort_if(Gate::forUser(Auth::guard('admin')->user())->denies('quote_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $authors = Author::where('status',1)->get();
         // tags
@@ -217,8 +249,16 @@ class QuoteController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateQuoteRequest $request, Quote $quote)
+    
+    //public function update(UpdateQuoteRequest $request, Quote $quote)
+    public function update(Request $request, Quote $quote)
     {
+        // echo $quote->id; echo "<br>";
+        // echo $request->updatedBy; echo "<br>";
+        // echo $request->author; echo "<br>";
+        // echo $request->text; echo "<br>";
+        // echo $request->url; echo "<br>";
+        // exit;
 
         $quote->update($request->all());
         if ($files = $request->file('image')) {

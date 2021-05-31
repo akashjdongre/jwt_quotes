@@ -30,6 +30,8 @@ class Author extends Authenticatable
         'url',
         'about',
         'status',
+        'author_text_meta_title',
+        'author_meta_description',
         'custom_id',
         'createdBy',
         'updatedBy',
