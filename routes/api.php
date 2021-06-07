@@ -77,6 +77,7 @@ Route::group([
 
     Route::get('/get_tags', [TagsController::class, 'getTags'])->middleware('jwt.verify'); 
     Route::get('/get_tag_detail/{tag}', [TagsController::class, 'show'])->middleware('jwt.verify');
+    Route::post('/create_tags', [TagsController::class, 'store'])->middleware('jwt.verify');
 
 
 });

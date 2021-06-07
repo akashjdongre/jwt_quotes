@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Validator;
 
 class TagsController extends Controller
 {
@@ -63,9 +64,25 @@ class TagsController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreTagRequest $request)
+    // public function store(StoreTagRequest $request)
+    public function store(Request $request)
     {
-        print_r($request->all()); exit;
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|unique:tags',
+            'url' => 'required|unique:tags',
+        ]);
+         
+        if($validator->fails())
+        {
+            return response()->json(
+                [
+                "status" => "failed",
+                "message" => "Validation error: There was an error while processing data.",
+                "errors" => $validator->errors()->toJson(), 
+                ],
+                400
+            );
+        }  
         $tag = Tag::create($request->all());
         if ($files = $request->file('meta_image')) {
 
@@ -79,7 +96,12 @@ class TagsController extends Controller
         $tag->custom_id='TAGID'.$tag->id;
         $tag->save();
 
-        return redirect()->route('admin.tags.index');
+        // return redirect()->route('admin.tags.index');
+        return response()->json([
+            'status' => 'success',
+            'message' => 'tag created successfully',
+            'tag_id' => $tag->id
+        ], 201);
     }
 
     /**
